@@ -1,0 +1,18 @@
+{
+    "name": "cordova.plugin.bluetoothprinter",
+    "version": "0.0.1",
+    "description": "Bluetooth Printer",
+    "cordova": {
+      "id": "cordova.plugin.bluetoothprinter",
+      "platforms": [
+        "android"
+      ]
+    },
+    "keywords": [
+      "ecosystem:cordova",
+      "cordova-android"
+    ],
+    "author": "Devionn",
+    "license": "ISC"
+  }
+  
