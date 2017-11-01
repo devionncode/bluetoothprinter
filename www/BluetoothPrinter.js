@@ -1,6 +1,6 @@
 var exec = require('cordova/exec');
 
-var BTPrinter = {
+exports.BTPrinter = {
    list: function(fnSuccess, fnError){
       exec(fnSuccess, fnError, "BluetoothPrinter", "list", []);
    },
@@ -23,5 +23,3 @@ var BTPrinter = {
       exec(fnSuccess, fnError, "BluetoothPrinter", "printPOSCommand", [str]);
    }
 };
-
-exports = BTPrinter;
