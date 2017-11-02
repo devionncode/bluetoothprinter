@@ -5,15 +5,14 @@
         <clobbers target="cordova.plugins.BluetoothPrinter" />
     </js-module>
     <platform name="android">
-        <config-file parent="/*" target="res/xml/config.xml">
-            <feature name="BluetoothPrinter">
-                <param name="android-package" value="cordova.plugin.bluetoothprinter.BluetoothPrinter" />
-                <param name="onload" value="true" />
-            </feature>
-        </config-file>
-        <config-file parent="/*" target="AndroidManifest.xml">
-            <uses-permission android:name="android.permission.BLUETOOTH" />
-        </config-file>
-        <source-file src="src/android/BluetoothPrinter.java" target-dir="src/cordova/plugin/bluetoothprinter" />
+    <config-file parent="/*" target="res/xml/config.xml">
+        <feature name="BluetoothPrinter">
+            <param name="android-package" value="cordova.plugin.bluetoothprinter.BluetoothPrinter" />
+        </feature>
+    </config-file>
+    <config-file parent="/*" target="AndroidManifest.xml">
+        <uses-permission android:name="android.permission.BLUETOOTH" />
+    </config-file>
+    <source-file src="src/android/BluetoothPrinter.java" target-dir="src/cordova/plugin/bluetoothprinter/BluetoothPrinter" />
     </platform>
 </plugin>
