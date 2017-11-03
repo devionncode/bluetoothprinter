@@ -20,4 +20,4 @@ exports.printImage = function (str, fnSuccess, fnError) {
 };
 exports.printPOSCommand = function (str, fnSuccess, fnError) {
   exec(fnSuccess, fnError, "BluetoothPrinter", "printPOSCommand", [str]);
-}
+};
