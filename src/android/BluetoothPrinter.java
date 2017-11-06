@@ -260,6 +260,7 @@ public class BluetoothPrinter extends CordovaPlugin {
 		try {
 
 			mmOutputStream.write(msg.getBytes());
+			mmOutputStream.flush();
 
 			// tell the user data were sent
 			//Log.d(LOG_TAG, "Data Sent");
