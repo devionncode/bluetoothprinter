@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.BitSet;
 import java.util.Hashtable;
 import java.util.Set;
 import java.util.UUID;
@@ -18,7 +19,11 @@ import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
 import android.content.Intent;
+import android.graphics.ColorMatrix;
+import android.graphics.ColorMatrixColorFilter;
+import android.os.Build;
 import android.os.Handler;
+import android.support.annotation.RequiresApi;
 import android.util.Log;
 
 import android.app.Activity;
@@ -36,6 +41,10 @@ import android.util.Base64;
  * This class echoes a string called from JavaScript.
  */
 public class BluetoothPrinter extends CordovaPlugin {
+
+	private final byte[] START = { 0x1B, '@' };
+	private final byte[] SET_LINE_SPACING_24 = { 0x1B, 0x33, (byte) 24 };
+	private final byte[] SELECT_BIT_IMAGE_MODE = {0x1B, 0x2A, 33, (byte) 255, 3};
 
     private static final String LOG_TAG = "BluetoothPrinter";
 	BluetoothAdapter mBluetoothAdapter;
@@ -129,6 +138,7 @@ public class BluetoothPrinter extends CordovaPlugin {
 			Set<BluetoothDevice> pairedDevices = mBluetoothAdapter.getBondedDevices();
 			if (pairedDevices.size() > 0) {
 				JSONObject json = null;
+				JSONArray jsonArray = new JSONArray();
 				for (BluetoothDevice device : pairedDevices) {
 					/*
 					Hashtable map = new Hashtable();
@@ -139,8 +149,9 @@ public class BluetoothPrinter extends CordovaPlugin {
 					*/
 
 					json = deviceToJSON(device);
+					jsonArray.put(json);
 				}
-				callbackContext.success(json);
+				callbackContext.success(jsonArray);
 			} else {
 				callbackContext.error("No Bluetooth Device Found");
 			}
@@ -289,7 +300,7 @@ public class BluetoothPrinter extends CordovaPlugin {
 	}
 
 	//This will send data to bluetooth printer
-    boolean printImage(CallbackContext callbackContext, String msg) throws IOException {
+	boolean printImage(CallbackContext callbackContext, String msg) throws IOException {
         try {
 			
             final String encodedString = msg;
@@ -300,18 +311,13 @@ public class BluetoothPrinter extends CordovaPlugin {
             Bitmap decodedBitmap = BitmapFactory.decodeByteArray(decodedBytes, 0, decodedBytes.length);
 
             bitmap = decodedBitmap;
+			int mWidth = bitmap.getWidth();
+			int mHeight = bitmap.getHeight();
+			bitmap=resizeImage(bitmap, 48 * 8, mHeight);
 
-            int mWidth = bitmap.getWidth();
-            int mHeight = bitmap.getHeight();
-            //bitmap=resizeImage(bitmap, imageWidth * 8, mHeight);
-            bitmap=resizeImage(bitmap, 48 * 8, mHeight);
-
-
-            byte[]  bt =getBitmapData(bitmap);
-
-            bitmap.recycle();
-
-            mmOutputStream.write(bt);
+			byte[] command = Utils.decodeBitmap(bitmap);
+//			mmOutputStream.write(PrinterCommands.ESC_ALIGN_CENTER);
+			mmOutputStream.write(command);
 
             // tell the user data were sent
             //Log.d(LOG_TAG, "Data Sent");
@@ -327,7 +333,6 @@ public class BluetoothPrinter extends CordovaPlugin {
         }
         return false;
     }
-
 
     boolean printPOSCommand(CallbackContext callbackContext, byte[] buffer) throws IOException {
         try {
